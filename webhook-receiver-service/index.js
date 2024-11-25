@@ -1,6 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
+const {
+    SURVEY_STORAGE_SERVICE_URL,
+    SURVEY_RESPONSE_SERVICE_URL,
+    SURVEY_CREATOR_SERVICE_URL,
+} = require('../config');
+
+
 
 const app = express();
 app.use(bodyParser.json());
@@ -10,13 +17,14 @@ app.use(bodyParser.json());
 app.post('/webhook', async (req, res) => {
     const data = req.body;
     console.log('Received webhook data:', data);
+  
 
     // Convert incoming data into key-value pairs
     const keyValueMap = new Map(Object.entries(data));
     const keys = Array.from(keyValueMap.keys()); 
 
     // Check if keys exist in the system
-    const checkResponse = await axios.post('http://localhost:5002/check', { keys });
+    const checkResponse = await axios.post(`${SURVEY_STORAGE_SERVICE_URL}/check`, { keys });
     const { existingKeys, newKeys } = checkResponse.data;
 
     const formID = data.formID;
@@ -37,7 +45,7 @@ app.post('/webhook', async (req, res) => {
 // Function to create a new survey
 async function createSurvey(keyValueMap, data) {
     try {
-        await axios.post('http://localhost:3001/create-survey', { keyValueMap: Object.fromEntries(keyValueMap), data });
+        await axios.post(`${SURVEY_CREATOR_SERVICE_URL}/create-survey`, { keyValueMap: Object.fromEntries(keyValueMap), data });
         console.log('Survey creation request sent');
     } catch (err) {
         console.error('Error creating survey:', err);
@@ -47,7 +55,7 @@ async function createSurvey(keyValueMap, data) {
 // Function to submit a survey response
 async function submitSurveyResponse(data) {
     try {
-        await axios.post('http://localhost:3002/submit-response', data);
+        await axios.post(`${SURVEY_RESPONSE_SERVICE_URL}/submit-response`, data);
         console.log('Survey response submission request sent');
     } catch (err) {
         console.error('Error submitting survey response:', err);

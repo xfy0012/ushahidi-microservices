@@ -1,3 +1,5 @@
+const { USHAHIDI_API_URL } = require('../config');
+
 const axios = require('axios');
 
 let accessToken = null;
@@ -16,7 +18,7 @@ const tokenConfig = {
 // Function to fetch access token from an external source
 async function getAccessToken() {
     if (!accessToken || Date.now() > tokenExpiryTime) {
-        const response = await axios.post('http://localhost:8080/oauth/token', tokenConfig, {
+        const response = await axios.post(`${USHAHIDI_API_URL}/oauth/token`, tokenConfig, {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
@@ -33,7 +35,7 @@ async function getAccessToken() {
 }
 // Function to refresh access token
 async function refreshAccessToken() {
-    const response = await axios.post('http://localhost:8080/oauth/token', {
+    const response = await axios.post(`${USHAHIDI_API_URL}/oauth/token`, {
         grant_type: 'refresh_token',
         client_id: tokenConfig.client_id,
         client_secret: tokenConfig.client_secret,

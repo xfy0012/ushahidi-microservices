@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { getFormAttributes, extractKeys } = require('./getForm.js');
 const app = express();
+
+
 app.use(bodyParser.json());
 
 // In-memory store for keys and forms
@@ -38,9 +40,9 @@ app.post('/store', async (req, res) => {
             }
     
             const matchingAttribute = attributes.find(attr => {
-                const cleanLabel = attr.label.toLowerCase().replace(/[^a-z0-9]/g, '');  // 同样清理 label
+                const cleanLabel = attr.label.toLowerCase().replace(/[^a-z0-9]/g, '');  // Clean label in a similar way
                 console.log(`Trying to match cleanLabel: ${cleanLabel} with cleanValue: ${cleanValue}`);
-                return cleanLabel.includes(cleanValue);  // 使用部分匹配，确保 label 包含 value
+                return cleanLabel.includes(cleanValue);  // Use partial matching to ensure label contains the value
             });
             if (matchingAttribute) {
                 // If a matching attribute is found, store it in the formStore
@@ -107,11 +109,11 @@ app.post('/check', (req, res) => {
 // Retrieve specific form data by formID
 app.get('/forms', (req, res) => {
     try {
-        const allForms = Object.keys(formStore);  // 获取所有 formID
+        const allForms = Object.keys(formStore);  // Get all form IDs
         res.status(200).json({
             message: 'Successfully retrieved all forms',
-            forms: allForms,  // 返回所有的 formID
-            formStore: formStore  // 返回完整的 formStore
+            forms: allForms,  // Return all form IDs
+            formStore: formStore  // Return the complete formStore
         });
     } catch (err) {
         console.error('Error retrieving forms:', err);
@@ -119,10 +121,11 @@ app.get('/forms', (req, res) => {
     }
 });
 
+// Retrieve specific form data by formID
 app.get('/forms/:formID', (req, res) => {
     const formID = req.params.formID;
     if (formStore[formID]) {
-        res.status(200).json(formStore[formID]);  // 返回指定的 formStore
+        res.status(200).json(formStore[formID]);  // Return the specific formStore
     } else {
         res.status(404).json({ message: `Form with ID ${formID} not found` });
     }

@@ -1,8 +1,12 @@
+const { USHAHIDI_API_URL } = require('../config');
+
+
 const axios = require('axios');
+
 
 async function getFormAttributes(formID) {
     try {
-        const response = await axios.get(`http://localhost:8080/api/v3/forms/${formID}/attributes`);
+        const response = await axios.get(`${USHAHIDI_API_URL}/api/v3/forms/${formID}/attributes`);
         return response.data.results;  
     } catch (err) {
         console.error('Error fetching form attributes:', err);
